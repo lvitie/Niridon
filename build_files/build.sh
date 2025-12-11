@@ -113,7 +113,7 @@ ADDITIONAL_FEDORA_PACKAGES=(
     firefox # as RPM for GSConnect
     git-credential-libsecret
     gdb
-    gnome-network-displays
+    #gnome-network-displays
     libcamera-qcam
     nextcloud-client-nautilus
     pmbootstrap
@@ -145,6 +145,10 @@ dnf -y install --skip-unavailable \
 dnf -y copr enable lorbus/calls
 dnf -y install calls
 dnf -y copr disable lorbus/calls
+
+dnf -y copr enable lorbus/network-displays
+dnf -y install gnome-network-displays
+dnf -y copr disable lorbus/network-displays
 
 # Use systemd devel build
 curl -Lo /etc/yum.repos.d/system_systemd.repo https://download.opensuse.org/repositories/system:/systemd/Fedora_43/system:systemd.repo
