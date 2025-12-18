@@ -153,9 +153,9 @@ dnf -y install gnome-network-displays gnome-network-displays-extension
 dnf -y copr disable lorbus/network-displays
 
 # Use systemd devel build
-curl -Lo /etc/yum.repos.d/system_systemd.repo https://download.opensuse.org/repositories/system:/systemd/Fedora_43/system:systemd.repo
-dnf config-manager setopt system_systemd.enabled=0
-dnf -y update --repo="system_systemd" systemd 
+dnf -y copr enable packit/systemd-systemd-40133 fedora-rawhide-x86_64
+dnf -y update systemd 
+dnf -y copr disable packit/systemd-systemd-40133
 
 # Cleanup
 dnf clean all
