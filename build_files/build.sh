@@ -114,6 +114,14 @@ ADDITIONAL_FEDORA_PACKAGES=(
     git-credential-libsecret
     git-evtag
     gdb
+    nodejs
+    yarnpkg
+    npx
+    pipx
+    meson
+    ninja
+    gettext
+    rust
     #gnome-network-displays
     #gnome-shell-extension-network-displays
     libcamera-qcam
@@ -151,6 +159,10 @@ dnf -y copr disable lorbus/calls
 dnf -y copr enable lorbus/network-displays
 dnf -y install gnome-network-displays gnome-network-displays-extension
 dnf -y copr disable lorbus/network-displays
+
+dnf -y copr enable lorbus/theia
+dnf -y install theia-ide
+dnf -y copr enable lorbus/theia
 
 # Cleanup
 dnf clean all
