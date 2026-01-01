@@ -122,6 +122,7 @@ ADDITIONAL_FEDORA_PACKAGES=(
     ninja
     gettext
     rust
+    dvb-tools
     #gnome-network-displays
     #gnome-shell-extension-network-displays
     libcamera-qcam
