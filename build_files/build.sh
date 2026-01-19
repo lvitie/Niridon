@@ -26,7 +26,7 @@ if [[ "${IMAGE_NAME}" == "bluespin-surface" ]]; then
     dnf config-manager setopt linux-surface.enabled=0
     # Install Kernel
     dnf -y install --setopt=disable_excludes=* --repo="linux-surface" \
-        kernel-surface
+        kernel-surface iptsd
 
     dnf versionlock add kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra
 
@@ -67,8 +67,6 @@ surface_kbd
 
 EOF
 
-    dnf -y install --repo="linux-surface" \
-        iptsd
     dnf -y swap --repo="linux-surface" \
         libwacom-data libwacom-surface-data
     dnf -y swap --repo="linux-surface" \
@@ -76,7 +74,7 @@ EOF
 
     # Regenerate initramfs
     KERNEL_SUFFIX=""
-    QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-(|'"$KERNEL_SUFFIX"'-)(\d+\.\d+\.\d+)' | sed -E 's/kernel-(|'"$KERNEL_SUFFIX"'-)//')"
+    QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-surface-(|'"$KERNEL_SUFFIX"'-)(\d+\.\d+\.\d+)' | sed -E 's/kernel-surface-(|'"$KERNEL_SUFFIX"'-)//')"
     export DRACUT_NO_XATTR=1
     /usr/bin/dracut --no-hostonly --kver "$QUALIFIED_KERNEL" --reproducible -v --add ostree -f "/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
     chmod 0600 "/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
