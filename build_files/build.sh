@@ -30,14 +30,6 @@ if [[ "${IMAGE_NAME}" == "bluespin-surface" ]]; then
 
     dnf versionlock add kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra
 
-    # Re-install v4l2loopback
-    dnf -y install \
-        https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm \
-        https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
-    dnf -y install \
-        v4l2loopback
-    dnf -y remove rpmfusion-free-release rpmfusion-nonfree-release
-
     # Configure surface kernel modules to load at boot
     tee /usr/lib/modules-load.d/ublue-surface.conf << EOF
 # Only on AMD models
