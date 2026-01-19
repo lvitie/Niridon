@@ -21,22 +21,12 @@ if [[ "${IMAGE_NAME}" == "bluespin-surface" ]]; then
         rpm --erase $pkg --nodeps
     done
 
-    # Fetch Common AKMODS & Kernel RPMS
-    skopeo copy --retry-times 3 docker://ghcr.io/ublue-os/akmods:bazzite-"$(rpm -E %fedora)" dir:/tmp/akmods
-    AKMODS_TARGZ=$(jq -r '.layers[].digest' </tmp/akmods/manifest.json | cut -d : -f 2)
-    tar -xvzf /tmp/akmods/"$AKMODS_TARGZ" -C /tmp/
-    mv /tmp/rpms/* /tmp/akmods/
-    # NOTE: kernel-rpms should auto-extract into correct location
-
-    # Print some info
-    tree /tmp/akmods/
-    cat /etc/dnf/dnf.conf
-
+    # Install Linux Surface Kernel
+    dnf config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
+    dnf config-manager setopt linux-surface.enabled=0
     # Install Kernel
-    dnf -y install --setopt=disable_excludes=* \
-        /tmp/kernel-rpms/kernel-[0-9]*.rpm \
-        /tmp/kernel-rpms/kernel-core-*.rpm \
-        /tmp/kernel-rpms/kernel-modules-*.rpm
+    dnf -y install --setopt=disable_excludes=* --repo="linux-surface" \
+        kernel-surface
 
     dnf versionlock add kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra
 
@@ -45,7 +35,7 @@ if [[ "${IMAGE_NAME}" == "bluespin-surface" ]]; then
         https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm \
         https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
     dnf -y install \
-        v4l2loopback /tmp/akmods/kmods/*v4l2loopback*.rpm
+        v4l2loopback
     dnf -y remove rpmfusion-free-release rpmfusion-nonfree-release
 
     # Configure surface kernel modules to load at boot
@@ -85,10 +75,6 @@ surface_kbd
 
 EOF
 
-    dnf config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
-    # Pin to surface-linux fedora 42 repo for now
-    sed -i 's|^baseurl=https://pkg.surfacelinux.com/fedora/f$releasever/|baseurl=https://pkg.surfacelinux.com/fedora/f42/|' /etc/yum.repos.d/linux-surface.repo
-    dnf config-manager setopt linux-surface.enabled=0
     dnf -y install --repo="linux-surface" \
         iptsd
     dnf -y swap --repo="linux-surface" \
