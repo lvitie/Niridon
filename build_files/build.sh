@@ -139,7 +139,11 @@ dnf -y copr disable lorbus/network-displays
 
 dnf -y copr enable lorbus/theia
 dnf -y install theia-ide
-dnf -y copr enable lorbus/theia
+dnf -y copr disable lorbus/theia
+
+dnf -y copr enable lorbus/NetworkManager
+dnf -y update NetworkManager
+dnf -y copr disable lorbus/NetworkManager
 
 # Cleanup
 dnf clean all
