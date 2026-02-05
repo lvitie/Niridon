@@ -77,24 +77,42 @@ dnf -y install niri quickshell noctalia-shell
 
 # Fetch CachyOS Configs for Niri and Noctalia into /etc/skel
 mkdir -p /etc/skel/.config
-# Niri Configs
+
+# Niri Configs (Standard)
+# Note: Repo structure is etc/skel/.config/niri
 if ! git clone https://github.com/CachyOS/cachyos-niri-settings.git /tmp/cachyos-niri; then
     echo "Failed to clone CachyOS Niri settings"
 else
-    cp -r /tmp/cachyos-niri/.config/niri /etc/skel/.config/
+    # Copy niri config
+    if [ -d "/tmp/cachyos-niri/etc/skel/.config/niri" ]; then
+        cp -r /tmp/cachyos-niri/etc/skel/.config/niri /etc/skel/.config/
+    fi
+    # Also copy other useful configs if present (e.g. qt5ct, gtk)
+    if [ -d "/tmp/cachyos-niri/etc/skel/.config/qt5ct" ]; then
+        cp -r /tmp/cachyos-niri/etc/skel/.config/qt5ct /etc/skel/.config/
+    fi
     rm -rf /tmp/cachyos-niri
 fi
 
-# Noctalia Configs
+# Noctalia Configs (Overrides or Additions)
 if ! git clone https://github.com/CachyOS/cachyos-niri-noctalia.git /tmp/cachyos-noctalia; then
     echo "Failed to clone CachyOS Noctalia settings"
 else
-    # Assuming the repo structure matches standard config layout or adjusting as needed
-    # Typically these might go into .config/noctalia or similar
-    # If the repo root IS the config, we copy it. Let's inspect content if possible, but for now copying to .config/noctalia-shell or .config/quickshell/noctalia-shell
-    # Research showed: ~/.config/quickshell/noctalia-shell
-    mkdir -p /etc/skel/.config/quickshell
-    cp -r /tmp/cachyos-noctalia /etc/skel/.config/quickshell/noctalia-shell
+    # This repo seems to provide a Niri config tailored for Noctalia. 
+    # If the user wants Noctalia, we should probably prefer this one OR install it as separate to verify.
+    # For now, let's copy its niri config over the previous one if it exists, as 'cachyos-niri-noctalia' implies it's the specific setup
+    if [ -d "/tmp/cachyos-noctalia/etc/skel/.config/niri" ]; then
+        cp -r /tmp/cachyos-noctalia/etc/skel/.config/niri /etc/skel/.config/
+    fi
+    
+    # Check for actual noctalia/quickshell configs
+    if [ -d "/tmp/cachyos-noctalia/etc/skel/.config/quickshell" ]; then
+        cp -r /tmp/cachyos-noctalia/etc/skel/.config/quickshell /etc/skel/.config/
+    fi
+    if [ -d "/tmp/cachyos-noctalia/etc/skel/.config/noctalia" ]; then
+        cp -r /tmp/cachyos-noctalia/etc/skel/.config/noctalia /etc/skel/.config/
+    fi
+
     rm -rf /tmp/cachyos-noctalia
 fi
 # Ensure permissions
