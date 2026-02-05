@@ -72,11 +72,8 @@ dnf -y copr enable zhangyi6324/noctalia-shell
 # Install Niri & Shells
 dnf -y install niri quickshell noctalia-shell
 
-# Install CachyOS Settings (and schedulers if available)
-# We don't install the kernel to avoid breaking Surface support
-dnf -y install cachyos-settings
-# Attempt to install scx-scheds if available, but don't fail if not
-dnf -y install scx-scheds || true
+# We don't install cachyos-settings or kernel to avoid build failures and surface issues.
+# Just fetching config files below.
 
 # Fetch CachyOS Configs for Niri and Noctalia into /etc/skel
 mkdir -p /etc/skel/.config
