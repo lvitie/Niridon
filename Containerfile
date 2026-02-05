@@ -1,4 +1,4 @@
-ARG IMAGE_NAME="${IMAGE_NAME:-bluespin}"
+ARG IMAGE_NAME="${IMAGE_NAME:-niridon}"
 
 # Allow build scripts to be referenced without being copied into the final image
 FROM scratch AS ctx

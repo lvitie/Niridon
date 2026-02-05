@@ -63,6 +63,46 @@ ADDITIONAL_FEDORA_PACKAGES=(
 dnf -y install --skip-unavailable \
     "${ADDITIONAL_FEDORA_PACKAGES[@]}"
 
+# Enable COPRs
+dnf -y copr enable yalter/niri
+dnf -y copr enable errornointernet/quickshell
+dnf -y copr enable bieszczaders/kernel-cachyos
+dnf -y copr enable zhangyi6324/noctalia-shell
+
+# Install Niri & Shells
+dnf -y install niri quickshell noctalia-shell
+
+# Install CachyOS Settings (and schedulers if available)
+# We don't install the kernel to avoid breaking Surface support
+dnf -y install cachyos-settings
+# Attempt to install scx-scheds if available, but don't fail if not
+dnf -y install scx-scheds || true
+
+# Fetch CachyOS Configs for Niri and Noctalia into /etc/skel
+mkdir -p /etc/skel/.config
+# Niri Configs
+if ! git clone https://github.com/CachyOS/cachyos-niri-settings.git /tmp/cachyos-niri; then
+    echo "Failed to clone CachyOS Niri settings"
+else
+    cp -r /tmp/cachyos-niri/.config/niri /etc/skel/.config/
+    rm -rf /tmp/cachyos-niri
+fi
+
+# Noctalia Configs
+if ! git clone https://github.com/CachyOS/cachyos-niri-noctalia.git /tmp/cachyos-noctalia; then
+    echo "Failed to clone CachyOS Noctalia settings"
+else
+    # Assuming the repo structure matches standard config layout or adjusting as needed
+    # Typically these might go into .config/noctalia or similar
+    # If the repo root IS the config, we copy it. Let's inspect content if possible, but for now copying to .config/noctalia-shell or .config/quickshell/noctalia-shell
+    # Research showed: ~/.config/quickshell/noctalia-shell
+    mkdir -p /etc/skel/.config/quickshell
+    cp -r /tmp/cachyos-noctalia /etc/skel/.config/quickshell/noctalia-shell
+    rm -rf /tmp/cachyos-noctalia
+fi
+# Ensure permissions
+chown -R root:root /etc/skel/.config
+
 dnf -y copr enable lorbus/calls
 dnf -y install calls
 dnf -y copr disable lorbus/calls
@@ -80,7 +120,7 @@ dnf -y update NetworkManager
 dnf -y copr disable lorbus/NetworkManager
 
 # Surface Variant
-if [[ "${IMAGE_NAME}" == "bluespin-surface" ]]; then
+if [[ "${IMAGE_NAME}" == "niridon-surface" ]]; then
     # Install Surface Packages
     dnf config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo
     dnf config-manager setopt linux-surface.enabled=0
