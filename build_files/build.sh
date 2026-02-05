@@ -60,7 +60,12 @@ ADDITIONAL_FEDORA_PACKAGES=(
     gnome-shell-extension-workspace-indicator
 )
 
+# Ensure locale is set to avoid issues with non-ASCII filenames
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
+
 dnf -y install --skip-unavailable \
+    glibc-langpack-en \
     "${ADDITIONAL_FEDORA_PACKAGES[@]}"
 
 # Enable COPRs
@@ -115,6 +120,10 @@ else
 
     rm -rf /tmp/cachyos-noctalia
 fi
+
+# Sanitize /etc/skel to remove any non-ASCII filenames that breaks Anaconda
+find /etc/skel -name "*[^[:ascii:]]*" -exec rm -rf {} +
+
 # Ensure permissions
 chown -R root:root /etc/skel/.config
 
